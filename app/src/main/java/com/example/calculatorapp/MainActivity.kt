@@ -124,7 +124,8 @@ fun CalculatorApp() {
         Spacer(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(24.dp)
+                .background(Color.Black)
+                .height(32.dp)
         )
         Column(modifier = Modifier
             .fillMaxWidth()
