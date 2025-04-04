@@ -1,5 +1,6 @@
 package com.example.calculatorapp
 
+import android.app.Activity
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -12,6 +13,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -48,6 +50,7 @@ fun GreetingPreview() {
 @Composable
 fun CalculatorApp() {
     var display by remember { mutableStateOf("") }
+    val context = LocalContext.current
 
     fun evaluateExpression(expression: String): Double {
         val tokens = expression.replace(" ", "").split("(?<=[-+*/])|(?=[-+*/])".toRegex())
@@ -72,8 +75,12 @@ fun CalculatorApp() {
             )
         }
 
+        var lastToken = ""
         for (token in tokens) {
             when {
+                lastToken.isNotEmpty() && lastToken[0] in precedence.keys && token[0] in precedence.keys -> {
+                    display = "Error"
+                }
                 token.toDoubleOrNull() != null -> numbers.push(token.toDouble())
                 token.length == 1 && token[0] in precedence.keys -> {
                     while (operators.isNotEmpty() && precedence[token[0]]!! <= precedence[operators.peek()]!!) {
@@ -82,6 +89,7 @@ fun CalculatorApp() {
                     operators.push(token[0])
                 }
             }
+            lastToken = token
         }
 
         while (operators.isNotEmpty()) applyOperation()
@@ -109,38 +117,67 @@ fun CalculatorApp() {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .padding(0.dp)
             .background(Color.LightGray),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(
-            text = display,
-            fontSize = 32.sp,
-            fontWeight = FontWeight.Bold,
+        Spacer(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(24.dp)
+        )
+        Column(modifier = Modifier
+            .fillMaxWidth()
+            .height(72.dp)
+            .background(Color.Blue)
+        ){
+            Button(
+                onClick = {(context as Activity).finish()},
+                modifier = Modifier.padding(16.dp)
+            ) {
+                Text("<", fontSize = 24.sp)
+            }
+        }
+
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp)
-                .background(Color.White, shape = RoundedCornerShape(8.dp))
-                .padding(16.dp)
-        )
+                .background(Color.LightGray) ,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = display,
+                fontSize = 32.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+                    .background(Color.White, shape = RoundedCornerShape(8.dp))
+                    .padding(16.dp)
+            )
 
-        val buttons = listOf(
-            listOf("C", "7", "8", "9", "/"),
-            listOf("4", "5", "6", "*"),
-            listOf("1", "2", "3", "-"),
-            listOf("0", ".", "=", "+")
-        )
+            val buttons = listOf(
+                listOf("C", "7", "8", "9", "/"),
+                listOf("4", "5", "6", "*"),
+                listOf("1", "2", "3", "-"),
+                listOf("0", ".", "=", "+")
+            )
 
-        buttons.forEach { row ->
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
-                row.forEach { label ->
-                    Button(
-                        onClick = { onButtonClick(label) },
-                        modifier = Modifier
-                            .weight(1f)
-                            .padding(4.dp)
-                    ) {
-                        Text(label, fontSize = 24.sp)
+            buttons.forEach { row ->
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    row.forEach { label ->
+                        Button(
+                            onClick = { onButtonClick(label) },
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(4.dp)
+                        ) {
+                            Text(label, fontSize = 24.sp)
+                        }
                     }
                 }
             }
