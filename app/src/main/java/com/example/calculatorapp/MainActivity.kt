@@ -14,10 +14,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.unit.LayoutDirection
 import java.util.*
 import com.example.calculatorapp.ui.theme.CalculatorAppTheme
 
@@ -26,7 +28,9 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            CalculatorApp()
+            CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
+                CalculatorApp()
+            }
         }
     }
 }
@@ -69,7 +73,10 @@ fun CalculatorApp() {
                     '+' -> a + b
                     '-' -> a - b
                     '*' -> a * b
-                    '/' -> a / b
+                    '/' -> {
+                        if (b == 0.0) throw ArithmeticException("Division by zero")
+                        a / b
+                    }
                     else -> throw IllegalArgumentException("Invalid operator")
                 }
             )
@@ -109,8 +116,15 @@ fun CalculatorApp() {
     fun onButtonClick(value: String) {
         when (value) {
             "C" -> display = ""
+            "←" -> if (display.isNotEmpty()) display = display.dropLast(1)
             "=" -> display = calculate(display)
-            else -> display += value
+            else -> {
+                val lastChar = display.lastOrNull()
+                if (value.length == 1 && value[0] in "+-*/" && lastChar != null && lastChar in "+-*/") {
+                    return
+                }
+                display += value
+            }
         }
     }
 
@@ -132,12 +146,11 @@ fun CalculatorApp() {
             .height(72.dp)
             .background(Color.Blue)
         ){
-            Button(
-                onClick = {(context as Activity).finish()},
-                modifier = Modifier.padding(16.dp)
-            ) {
-                Text("<", fontSize = 24.sp)
-            }
+            ExitButton(
+                label = "Exit",
+                modifier = Modifier.padding(16.dp),
+                onClick = { (context as Activity).finish() }
+            )
         }
 
         Column(
@@ -159,26 +172,25 @@ fun CalculatorApp() {
             )
 
             val buttons = listOf(
-                listOf("C", "7", "8", "9", "/"),
+                listOf("←", "C"),
+                listOf("7", "8", "9", "/"),
                 listOf("4", "5", "6", "*"),
                 listOf("1", "2", "3", "-"),
-                listOf("0", ".", "=", "+")
+                listOf("=", "0", ".", "+")
             )
 
             buttons.forEach { row ->
+                Spacer(modifier = Modifier.height(8.dp))
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
                     row.forEach { label ->
-                        Button(
-                            onClick = { onButtonClick(label) },
-                            modifier = Modifier
-                                .weight(1f)
-                                .padding(4.dp)
-                        ) {
-                            Text(label, fontSize = 24.sp)
-                        }
+                        CalculatorButton(
+                            label = label,
+                            modifier = Modifier.weight(1f),
+                            onClick = { onButtonClick(label) }
+                        )
                     }
                 }
             }
