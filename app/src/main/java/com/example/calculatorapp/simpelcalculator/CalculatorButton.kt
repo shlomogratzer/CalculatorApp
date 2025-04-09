@@ -1,4 +1,4 @@
-package com.example.calculatorapp
+package com.example.calculatorapp.simpelcalculator
 
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.calculatorapp.ui.theme.*
 
 @Composable
 fun ExitButton(
@@ -20,7 +21,7 @@ fun ExitButton(
     Button(
         onClick = onClick,
         colors = ButtonDefaults.buttonColors(
-            containerColor = Color(0xFFB71C1C),  // צבע אדום כהה
+            containerColor = ErrorColor,  // צבע אדום כהה
             contentColor = Color(0xFFF5F5F5)
         ),
         shape = RoundedCornerShape(50), // כפתור עגול יותר
@@ -47,16 +48,16 @@ fun CalculatorButton(
     val isDelete = label == "←"
 
     val backgroundColor = when {
-        isClear -> Color(0xFFD32F2F)      // אדום
+        isClear -> MaterialTheme.colorScheme.error     // אדום
         isDelete -> Color(0xFF757575)     // אפור כהה
-        isEquals -> Color(0xFF388E3C)     // ירוק
-        isOperator -> Color(0xFF1976D2)   // כחול
-        else -> Color(0xFFF5F5F5)         // לבן-אפור (מספרים)
+        isEquals -> MaterialTheme.colorScheme.tertiary   // ירוק
+        isOperator -> MaterialTheme.colorScheme.secondary  // כחול
+        else -> MaterialTheme.colorScheme.primary        // לבן-אפור (מספרים)
     }
 
     val contentColor = when {
         isClear || isDelete || isEquals || isOperator -> Color.White
-        else -> Color.Black
+        else -> MaterialTheme.colorScheme.onPrimary
     }
 
     Button(
