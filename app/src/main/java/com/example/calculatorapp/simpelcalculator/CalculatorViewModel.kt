@@ -12,11 +12,41 @@ class CalculatorViewModel: ViewModel() {
             "C" -> display = ""
             "←" -> if (display.isNotEmpty()) display = display.dropLast(1)
             "=" -> display = calculate(display)
+            "." -> {
+                val lastNumber = display.split("+", "-", "*", "/").last()
+                if (lastNumber.contains(".")) return // חוסם נקודה כפולה
+                if (lastNumber.isEmpty()) {
+                    display += "0."
+                } else {
+                    display += "."
+                }
+            }
+            "-" -> {
+                if (display.isEmpty()) return // חוסם מינוס בתחילת הביטוי
+                val lastChar = display.lastOrNull()
+                if (lastChar != null && lastChar in "+-*/") return // לא מאפשר רצף אופרטורים
+                display += "-"
+            }
             else -> {
                 val lastChar = display.lastOrNull()
                 if (value.length == 1 && value[0] in "+-*/" && lastChar != null && lastChar in "+-*/") {
                     return
                 }
+                // מניעת אפס מוביל במספר חדש
+                if (value in "123456789") {
+                    val lastToken = display.split("+", "-", "*", "/").last()
+                    if (lastToken == "0") {
+                        // מחליף את האפס הנוכחי בספרה החדשה
+                        display = display.dropLast(1) + value
+                        return
+                    }
+                }
+                // לא מאפשר 00
+                if (value == "0") {
+                    val lastToken = display.split("+", "-", "*", "/").last()
+                    if (lastToken == "0") return
+                }
+
                 display += value
             }
         }
@@ -25,7 +55,15 @@ class CalculatorViewModel: ViewModel() {
     private fun calculate(expression: String): String {
         return try {
             val result = evaluateExpression(expression)
-            if (result % 1 == 0.0) result.toInt().toString() else result.toString()
+
+            // בודק אם חורג מהמגבלות של Int
+            if (result > Int.MAX_VALUE || result < Int.MIN_VALUE) {
+                "Overflow"
+            } else if (result % 1 == 0.0) {
+                result.toInt().toString()
+            } else {
+                result.toString()
+            }
         } catch (e: Exception) {
             "Error"
         }
