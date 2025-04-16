@@ -7,7 +7,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.LayoutDirection
-import com.example.calculatorapp.simpelcalculator.CalculatorApp
+import com.example.calculatorapp.layout.Layout
 import com.example.calculatorapp.ui.theme.CalculatorAppTheme
 
 class MainActivity : ComponentActivity() {
@@ -17,7 +17,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
                 CalculatorAppTheme() {
-                    CalculatorApp()
+                    Layout()
                 }
             }
         }
