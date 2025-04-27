@@ -22,7 +22,7 @@ val DarkOnPrimary = Color.White
 val ErrorColor = Color(0xFFB00020)
 
 // Additional grays (optional)
-val PurpleGrey40 = Color(0xFF888888)
-val PurpleGrey80 = Color(0xFFBDBDBD)
-val Pink40 = Color(0xFFFF80AB)
-val Pink80 = Color(0xFFF48FB1)
+//val PurpleGrey40 = Color(0xFF888888)
+//val PurpleGrey80 = Color(0xFFBDBDBD)
+//val Pink40 = Color(0xFFFF80AB)
+//val Pink80 = Color(0xFFF48FB1)

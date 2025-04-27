@@ -1,6 +1,5 @@
 package com.example.calculatorapp.ui.theme
 
-import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
@@ -18,7 +17,7 @@ private val DarkColorScheme = darkColorScheme(
     background = DarkBackground,
     surface = DarkSurface,
     onPrimary = DarkOnPrimary,
-    error = ErrorColor
+    error = ErrorColor,
 )
 
 private val LightColorScheme = lightColorScheme(
@@ -28,7 +27,7 @@ private val LightColorScheme = lightColorScheme(
     background = LightBackground,
     surface = LightSurface,
     onPrimary = LightOnPrimary,
-    error = ErrorColor
+    error = ErrorColor,
 )
 
 
